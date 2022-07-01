@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import nextcord
 from typing import Literal
 
@@ -9,29 +9,31 @@ __all__ = (
     "Embed",
 )
 
-Mode = Literal["check", "cross"]
-Empty = nextcord.Embed.Empty
+Mode = Literal["G", "R"]
 
 
 class Embed(nextcord.Embed):
     def __init__(
         self,
-        description: str = Empty,
+        description: str = nextcord.Embed.Empty,
         *,
         color: int = Color.blue(),
-        title: str = Empty,
-        timestamp: datetime | bool = None,
+        title: str = nextcord.Embed.Empty,
+        timestamp: datetime.datetime | bool = None,
         mode: Mode = None
     ):
-        if mode is not None:
-            color, description = self._get_mode_values(description, mode)
+        self.description = description
+        self.mode = mode
 
-        timestamp = timestamp if timestamp is not True else datetime.utcnow()
+        if mode is not None:
+            color, description = self._get_mode_values()
+
+        timestamp = timestamp if timestamp is not True else datetime.datetime.utcnow()
         super().__init__(color=color, title=title, description=description, timestamp=timestamp)
 
-    def _get_mode_values(self, description: str, mode: Mode) -> tuple[Color, str]:
-        if mode == "check":
-            return Color.green(), Emoji.check() + " " + description
+    def _get_mode_values(self) -> tuple[Color, str]:
+        if self.mode == "G":
+            return Color.green(), Emoji.check() + " " + self.description
 
-        if mode == "cross":
-            return Color.amaranth(), Emoji.cross() + " " + description
+        if self.mode == "R":
+            return Color.red(), Emoji.cross() + " " + self.description
