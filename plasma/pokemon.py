@@ -17,7 +17,7 @@ class Pokemon:
 
     @property
     def name(self) -> str:
-        return self._pokemon["str"]
+        return self._pokemon["name"]
 
     @property
     def description(self) -> str:
