@@ -40,21 +40,7 @@ class ReactionRoles(commands.Cog):
     }
 
     def __init__(self, bot):
-        self.bot = bot
-
-    async def add_role(self, user, role):
-        if role not in user.roles:
-            await user.add_roles(role)
-
-            with suppress(nextcord.Forbidden):
-                await user.send(f"Gave you the **{role}** role!")
-
-    async def remove_role(self, user, role):
-        if role in user.roles:
-            await user.remove_roles(role)
-
-            with suppress(nextcord.Forbidden):
-                await user.send(f"Took away the **{role}** role!")
+        self.bot: commands.Bot = bot
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -87,7 +73,12 @@ class ReactionRoles(commands.Cog):
                     await message.remove_reaction(payload.emoji, user)
                     return
 
-            await self.add_role(user, role)
+            if role not in user.roles:
+                await user.add_roles(role)
+
+                with suppress(nextcord.Forbidden):
+                    message = await user.send(f"Gave you the **{role}** role!")
+                    await message.delete(delay=20)
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -105,7 +96,12 @@ class ReactionRoles(commands.Cog):
             elif payload.message_id == 995031116681592832:
                 role = guild.get_role(self.ACCESS_MENU[emoji])
 
-            await self.remove_role(user, role)
+            if role in user.roles:
+                await user.remove_roles(role)
+
+                with suppress(nextcord.Forbidden):
+                    message = await user.send(f"Took away the **{role}** role!")
+                    await message.delete(delay=20)
 
 def setup(bot):
     bot.add_cog(ReactionRoles(bot))
