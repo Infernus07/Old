@@ -44,7 +44,7 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.guild_id == 994266247577485473:
+        if payload.guild_id == 994266247577485473 and payload.user_id != self.bot.user.id:
             guild = self.bot.get_guild(payload.guild_id)
             user  = guild.get_member(payload.user_id)
             emoji = str(payload.emoji.id) if payload.emoji.is_custom_emoji() else payload.emoji.name
@@ -82,7 +82,7 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        if payload.guild_id == 994266247577485473:
+        if payload.guild_id == 994266247577485473 and payload.user_id != self.bot.user.id:
             guild = self.bot.get_guild(payload.guild_id)
             user  = guild.get_member(payload.user_id)
             emoji = str(payload.emoji.id) if payload.emoji.is_custom_emoji() else payload.emoji.name
