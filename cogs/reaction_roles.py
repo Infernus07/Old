@@ -40,7 +40,7 @@ class ReactionRoles(commands.Cog):
     """For reaction roles."""
 
     def __init__(self, bot):
-        self.bot: commands.Bot = bot
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
