@@ -1,4 +1,4 @@
-from nextcord.ext import command
+from nextcord.ext import commands
 
 
 class Reactions(commands.Cog):
