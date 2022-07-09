@@ -2,6 +2,11 @@ from nextcord.ext import commands
 
 from .errors import NotInGuild
 
+__all__ = (
+    "in_guilds",
+    "community_server_only"
+)
+
 
 def in_guilds(*guild_ids):
     def predicate(ctx):
