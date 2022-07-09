@@ -76,7 +76,6 @@ class ReactionRoles(commands.Cog):
 
             if role is not None and role not in user.roles:
                 await user.add_roles(role)
-
                 with suppress(nextcord.Forbidden):
                     message = await user.send(f"Gave you the **{role}** role!")
                     await message.delete(delay=20)
@@ -100,7 +99,6 @@ class ReactionRoles(commands.Cog):
 
             if role is not None and role in user.roles:
                 await user.remove_roles(role)
-
                 with suppress(nextcord.Forbidden):
                     message = await user.send(f"Took away the **{role}** role!")
                     await message.delete(delay=20)
