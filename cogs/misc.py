@@ -100,7 +100,7 @@ class Misc(commands.Cog):
     async def flip(self, ctx):
         """Flip a coin."""
 
-        await ctx.reply(random.choice("Tails", "Heads"), allowed_mentions=nextcord.AllowedMentions.none())
+        await ctx.reply(random.choice("Tails", "Heads"), mention_author=False)
 
     @plasma.community_server_only()
     @commands.command()
