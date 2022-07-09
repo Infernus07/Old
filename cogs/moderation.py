@@ -13,6 +13,7 @@ class Action:
     user: nextcord.Member
     guild: nextcord.Guild
     reason: str = None
+    duration: int = None
 
     async def notify_user(self, ctx):
         embed = nextcord.Embed(
@@ -132,3 +133,118 @@ class Unban(Action):
         await ctx.guild.unban(self.target, reason=self.reason or "No reason.")
         await self.notify_user(ctx)
         await self.log()
+
+
+class Moderation(commands.Cog):
+    """For moderation"""
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.command()
+    async def purge(self, ctx, count: int):
+        """Delete a number of messages from a channel."""
+
+        await ctx.message.delete()
+        await ctx.channel.purge(limit=count, check=lambda m: not m.pinned)
+
+    @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.command()
+    async def kick(self, ctx, member: nextcord.Member, *, reason=None):
+        """Kick a member."""
+
+        action = Kick(
+            target=member,
+            user=ctx.author,
+            guild=ctx.guild,
+            reason=reason
+        )
+        await action.execute(ctx)
+
+    @commands.check_any(commands.is_owner(), plasma.is_moderator())
+    @commands.command()
+    async def mute(self, ctx, member: nextcord.Member, duration, *, reason=None):
+        """Mute a member."""
+
+        if member.communication_disabled_until is not None:
+            raise commands.BadArgument(f"{member.display_name} is already muted.")
+
+        action = Mute(
+            target=member,
+            user=ctx.author,
+            guild=ctx.guild,
+            reason=reason,
+            duration=duration
+        )
+        await action.execute(ctx)
+
+    @commands.check_any(commands.is_owner(), plasma.is_moderator())
+    @commands.command()
+    async def unmute(self, ctx, member: nextcord.Member, *, reason=None):
+        """Unmute a member."""
+
+        if member.communication_disabled_until is None:
+            raise commands.BadArgument(f"{member.display_name} is not muted.")
+
+        action = Unmute(
+            target=member,
+            user=ctx.author,
+            guild=ctx.guild,
+            reason=reason
+        )
+        await action.execute(ctx)
+
+    @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.command()
+    async def ban(self, ctx, member: nextcord.Member, *, reason=None):
+        """Ban a member."""
+
+        bans = await ctx.guild.bans()
+        member_name, member_discriminator = str(member).split("#")
+
+        if bans:
+            for entry in bans:
+                user = entry.user
+                if (user.name, user.discriminator) == (member_name, member_discriminator):
+                    raise commands.BadArgument(f"{user} is already banned.")
+
+        action = Ban(
+            target=member,
+            user=ctx.author,
+            guild=ctx.guild,
+            reason=reason
+        )
+        await action.execute(ctx)
+
+    @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.command()
+    async def unban(self, ctx, member: nextcord.User, *, reason=None):
+        """Unban a member."""
+
+        bans = await ctx.guild.bans()
+        member_name, member_discriminator = str(member).split("#")
+        check = None
+
+        action = Unban(
+            target=member,
+            user=ctx.author,
+            guild=ctx.guild,
+            reason=reason
+        )
+
+        if bans:
+            for entry in bans:
+                user = entry.user
+                if (user.name, user.discriminator) == (member_name, member_discriminator):
+                    action.target = user
+                    await action.execute(ctx)
+                    check = True
+                    break
+
+            if not check:
+                raise commands.BadArgument(f"{member} was not banned.")
+        raise commands.BadArgument(f"{member} was not banned.")
+
+def setup(bot):
+    bot.add_cog(Moderation(bot))
