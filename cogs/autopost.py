@@ -45,11 +45,14 @@ class AutoPost(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if (
-            message.guild is not None and
-            message.guild.id == 994266247577485473 and
-            message.author != self.bot.user
+            message.guild is None
+            or message.guild.id != 994266247577485473
+            or message.author != self.bot.user
         ):
-            self.updated[message.channel.id] = True
+            return
+
+        self.updated[message.channel.id] = True
+            
 
     @tasks.loop(minutes=30)
     async def autopost(self):
