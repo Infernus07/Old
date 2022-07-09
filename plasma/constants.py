@@ -26,11 +26,13 @@ BANNED_WORDS = (
     "dick",
     "fuck",
     "fuk",
+    "motherfucker",
     "hoe",
     "nigg",
     "penis",
     "pussy",
     "sex",
     "s3xy",
+    "sexy",
     "vagina"
 )
