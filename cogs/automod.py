@@ -36,10 +36,11 @@ class Automod(commands.Cog):
         ):
             return
 
-        words = message.content.split(" ")
-        if any(x in plasma.BANNED_WORDS for x in words):
-            await self.notify(message, "Watch your language!")
-            return
+        words = message.content.lower().split(" ")
+        for i in plasma.BANNED_WORDS:
+            if any(i in x for x in words):
+                await self.notify(message, "Watch your language!")
+                return
 
         for code in self.invite_regex.findall(message.content):
             with suppress(nextcord.NotFound):
@@ -57,7 +58,8 @@ class Automod(commands.Cog):
             bucket = self.cooldown.get_bucket(message)
             if bucket.update_rate_limit():
                 self.cooldown._cache[self.cooldown._bucket_key(message)].reset()
-                await self.notify(message, "No spamming!")
+                await message.channel.purge(limit=15, check=lambda m: m.author == message.author)
+                await message.channel.send(f"{message.author.mention} No spamming!", delete_after=5)
                 return
 
     @commands.Cog.listener()
