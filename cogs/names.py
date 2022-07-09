@@ -28,7 +28,7 @@ class Names(commands.Cog):
 
     async def normalize(self, member):
         normalized = self.normalized(member.nick) or self.normalized(member.name) or LAST_RESORT
-        if normalized != member.display_name:
+        if member.guild.id == 994266247577485473 and normalized != member.display_name:
             await member.edit(nick=normalized)
 
     @commands.Cog.listener()
