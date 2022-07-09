@@ -1,11 +1,13 @@
 COGS = (
+    "automod",
     "autopost",
     "invite_tracker",
+    "khaleesi",
     "mongo",
     "names",
-    "react",
     "reaction_roles",
-    "spam"
+    "reactions",
+    "spamming"
 )
 
 OWNERS = (
