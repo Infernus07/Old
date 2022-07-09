@@ -1,2 +1,2 @@
 from .errors import *
-from .pagination import *
+from .views import *
