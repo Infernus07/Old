@@ -54,7 +54,7 @@ class AutoPost(commands.Cog):
         self.updated[message.channel.id] = True
             
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(minutes=5)
     async def autopost(self):
         for post in POSTS:
             if not next(post.do_post):
