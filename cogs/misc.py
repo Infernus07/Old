@@ -121,6 +121,7 @@ class Misc(commands.Cog):
         acknowledgement = self.get_acknowledgement(ctx, member)
 
         embed = nextcord.Embed(
+            color=nextcord.Color.blue(),
             description=member.mention,
             timestamp=datetime.utcnow()
         )
