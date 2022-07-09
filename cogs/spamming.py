@@ -23,7 +23,7 @@ SPAMMERS = [
 ]
 
 
-class Spam(commands.Cog):
+class Spamming(commands.Cog):
     """For spamming."""
 
     def __init__(self, bot):
@@ -46,4 +46,4 @@ class Spam(commands.Cog):
         self.spam.cancel()
 
 def setup(bot):
-    bot.add_cog(Spam(bot))
+    bot.add_cog(Spamming(bot))
