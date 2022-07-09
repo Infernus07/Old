@@ -9,20 +9,19 @@ from nextcord.ext import commands
 
 @dataclass
 class Action:
+    context: commands.Context
     target: nextcord.Member
-    user: nextcord.Member
-    guild: nextcord.Guild
     reason: str = None
     duration: datetime = None
 
-    async def notify_user(self, ctx):
+    async def confirm(self):
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
             description=f"{plasma.CHECK} ***{self.target.display_name} was {self.past_tense}.***"
         )
-        await ctx.send(embed=embed)
+        await self.context.send(embed=embed)
 
-    async def notify_target(self):
+    async def notify(self):
         embed = nextcord.Embed(
             color=self.color,
             title=f"{self.emoji} {self.past_tense.title()}",
@@ -49,10 +48,6 @@ class Action:
         channel = self.guild.get_channel(994922728987557918)
         await channel.send(embed=embed)
 
-    def check(self, ctx):
-        if ctx.author.top_role <= self.target.top_role:
-            raise commands.BadArgument("That user is a mod/admin, I can't do that.")
-
 
 class Kick(Action):
     type = "kick"
@@ -60,13 +55,12 @@ class Kick(Action):
     emoji = "\N{WOMANS BOOTS}"
     color = nextcord.Color.orange()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        self.check(ctx)
-        await ctx.guild.kick(self.target, reason=self.reason or "No reason.")
-        await self.notify_user(ctx)
-        await self.notify_target()
+    async def execute(self):
+        await self.notify()
+        await self.context.guild.kick(self.target, reason=self.reason or "No reason.")
+        await self.confirm()
         await self.log()
+
 
 class Warn(Action):
     type = "warn"
@@ -74,12 +68,11 @@ class Warn(Action):
     emoji = "\N{WARNING SIGN}"
     color = nextcord.Color.orange()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        self.check(ctx)
-        await self.notify_user(ctx)
-        await self.notify_target()
+    async def execute(self):
+        await self.confirm()
+        await self.notify()
         await self.log()
+
 
 class Mute(Action):
     type = "mute"
@@ -87,13 +80,12 @@ class Mute(Action):
     emoji = "\N{SPEAKER WITH CANCELLATION STROKE}"
     color = nextcord.Color.orange()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        self.check(ctx)
+    async def execute(self):
         await self.target.timeout(self.duration, reason=self.reason or "No reason.")
-        await self.notify_user(ctx)
-        await self.notify_target()
+        await self.confirm()
+        await self.notify()
         await self.log()
+
 
 class Unmute(Action):
     type = "unmute"
@@ -101,12 +93,12 @@ class Unmute(Action):
     emoji = "\N{SPEAKER}"
     color = nextcord.Color.green()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        await self.target.timeout(None, reason=self.reason or "No reason")
-        await self.notify_user(ctx)
-        await self.notify_target()
+    async def execute(self):
+        await self.target.timeout(None, reason=self.reason or "No reason.")
+        await self.confirm()
+        await self.notify()
         await self.log()
+
 
 class Ban(Action):
     type = "ban"
@@ -114,13 +106,12 @@ class Ban(Action):
     emoji = "\N{HAMMER}"
     color = nextcord.Color.red()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        self.check(ctx)
-        await self.notify_target()
-        await ctx.guild.ban(self.target, reason=self.reason or "No reason.")
-        await self.notify_user(ctx)
+    async def execute(self):
+        await self.context.guild.ban(self.target, reason=self.reason or "No reason")
+        await self.confirm()
+        await self.notify()
         await self.log()
+
 
 class Unban(Action):
     type = "unban"
@@ -128,10 +119,10 @@ class Unban(Action):
     emoji = "\N{OPEN LOCK}"
     color = nextcord.Color.green()
 
-    async def execute(self, ctx):
-        await ctx.message.delete()
-        await ctx.guild.unban(self.target, reason=self.reason or "No reason.")
-        await self.notify_user(ctx)
+    async def execute(self):
+        await self.context.guild.unban(self.target, reason=self.reason or "No reason")
+        await self.confirm()
+        await self.notify()
         await self.log()
 
 
@@ -156,13 +147,13 @@ class Moderation(commands.Cog):
     async def kick(self, ctx, member: nextcord.Member, *, reason=None):
         """Kick a member."""
 
-        action = Kick(
-            target=member,
-            user=ctx.author,
-            guild=ctx.guild,
-            reason=reason
-        )
-        await action.execute(ctx)
+        await ctx.message.delete()
+
+        if ctx.author.top_role <= self.target.top_role:
+            raise commands.BadArgument("That user is a mod/admin, I can't do that.")
+
+        action = Kick(ctx, member, reason)
+        await action.execute()
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
@@ -170,17 +161,16 @@ class Moderation(commands.Cog):
     async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeDelta, *, reason=None):
         """Mute a member."""
 
+        await ctx.message.delete()
+
         if member.communication_disabled_until is not None:
             raise commands.BadArgument(f"{member.display_name} is already muted.")
 
-        action = Mute(
-            target=member,
-            user=ctx.author,
-            guild=ctx.guild,
-            reason=reason,
-            duration=duration
-        )
-        await action.execute(ctx)
+        if ctx.author.top_role <= self.target.top_role:
+            raise commands.BadArgument("That user is a mod/admin, I can't do that.")
+
+        action = Mute(ctx, member, reason, duration)
+        await action.execute()
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
@@ -188,22 +178,24 @@ class Moderation(commands.Cog):
     async def unmute(self, ctx, member: nextcord.Member, *, reason=None):
         """Unmute a member."""
 
+        await ctx.message.delete()
+
         if member.communication_disabled_until is None:
             raise commands.BadArgument(f"{member.display_name} is not muted.")
 
-        action = Unmute(
-            target=member,
-            user=ctx.author,
-            guild=ctx.guild,
-            reason=reason
-        )
-        await action.execute(ctx)
+        action = Mute(ctx, member, reason)
+        await action.execute()
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
     @commands.command()
     async def ban(self, ctx, member: nextcord.Member, *, reason=None):
         """Ban a member."""
+
+        await ctx.message.delete()
+
+        if ctx.author.top_role <= self.target.top_role:
+            raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         bans = await ctx.guild.bans()
         member_name, member_discriminator = str(member).split("#")
@@ -214,13 +206,8 @@ class Moderation(commands.Cog):
                 if (user.name, user.discriminator) == (member_name, member_discriminator):
                     raise commands.BadArgument(f"{user} is already banned.")
 
-        action = Ban(
-            target=member,
-            user=ctx.author,
-            guild=ctx.guild,
-            reason=reason
-        )
-        await action.execute(ctx)
+        action = Ban(ctx, member, reason)
+        await action.execute()
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
@@ -228,16 +215,10 @@ class Moderation(commands.Cog):
     async def unban(self, ctx, member: nextcord.User, *, reason=None):
         """Unban a member."""
 
+        action = Unban(ctx, member, reason)
         bans = await ctx.guild.bans()
         member_name, member_discriminator = str(member).split("#")
         check = None
-
-        action = Unban(
-            target=member,
-            user=ctx.author,
-            guild=ctx.guild,
-            reason=reason
-        )
 
         if bans:
             for entry in bans:
