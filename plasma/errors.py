@@ -12,6 +12,10 @@ class DiscordException(Exception):
             super().__init__(*args)
 
 
+class NotInGuild(DiscordException):
+    pass
+
+
 class PokemonNotFound(DiscordException):
     def __init__(self, pokemon_name):
         super().__init__(f"Could not find a pokemon matching `{pokemon_name}`.")
