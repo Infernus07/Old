@@ -10,3 +10,8 @@ async def get_confirmation(ctx, message):
     view.message = await ctx.channel.send(message, view=view)
     await view.wait()
     return view.result
+
+def sub(text, words):
+    for i in words:
+        text = text.replace(i, "")
+    return text.strip()
