@@ -29,31 +29,36 @@ class Khaleesi(commands.Cog):
         await message.channel.edit(name=name, category=category)
 
     @commands.Cog.listener()
-    async def on_message(self, message: nextcord.Message):
+    async def on_message(self, message):
         if (
-            message.guild is not None and
-            message.channel.category is not None and
-            message.guild.id == 860180439666917416 and
-            message.channel.category.id == 863437651348815872
+            message.guild is None
+            or message.guild.id != 860180439666917416
+            or message.channel.category is None
+            or message.channel.category.id != 863437651348815872
         ):
-            rare_role = message.guild.get_role(900505207023206400)
-            sh_role = message.guild.get_role(967501038183645204)
+            return
 
-            if rare_role.mention in message.content:
-                await self.process(message, 969285850426925117, "🎉｜rare")
-                self.redirect(message)
+        rare_role = message.guild.get_role(900505207023206400)
+        sh_role = message.guild.get_role(967501038183645204)
 
-            elif sh_role.mention in message.content:
-                await self.process(message, 933538406414319637, "✨｜shiny-hunt")
-                self.redirect(message)
+        if rare_role.mention in message.content:
+            await self.process(message, 969285850426925117, "🎉｜rare")
+            self.redirect(message)
+            return
 
-            elif (
-                message.author.id == 875526899386953779 and
-                "Shiny" in message.content and
-                len(message.mentions) > 0
-            ):
-                name = plasma.sub(message.content, ("✨", "*", "Pinging", "Shiny", "Hunters")).lower()
-                await self.process(message, 933538406414319637, name)
+        if sh_role.mention in message.content:
+            await self.process(message, 933538406414319637, "✨｜shiny-hunt")
+            self.redirect(message)
+            return
+
+        if (
+            message.author.id == 875526899386953779
+            and "Shiny" in message.content
+            and len(message.mentions) > 0
+        ):
+            name = plasma.sub(message.content, ("✨", "*", "Pinging", "Shiny", "Hunters")).lower()
+            await self.process(message, 933538406414319637, name)
+            return
 
     @nextcord.slash_command(guild_ids=[860180439666917416], description="Deletes the current channel.")
     async def close(self, interaction):
