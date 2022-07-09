@@ -1,6 +1,7 @@
 COGS = (
     "automod",
     "autopost",
+    "bot",
     "invite_tracker",
     "khaleesi",
     "mongo",
