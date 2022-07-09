@@ -61,7 +61,7 @@ class Bot(commands.Cog):
         """"Reports a member to the server's staff."""
 
         if member.bot or member == ctx.author:
-            raise commands.BadArgument("You cannot report *{}*.".format("bots" if member.bot else "yourself"))
+            raise commands.BadArgument("You cannot report {}.".format("bots" if member.bot else "yourself"))
 
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
