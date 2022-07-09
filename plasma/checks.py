@@ -8,6 +8,18 @@ __all__ = (
 )
 
 
+def is_manager():
+    return commands.has_any_role(994927712135286828, 994927785351053362)
+
+
+def is_moderator():
+    return commands.has_any_role(994927712135286828, 994927785351053362, 994928036015259698)
+
+
+def is_trial_moderator():
+    return commands.has_any_role(994927712135286828, 994927785351053362, 994928036015259698, 994928096023154819)
+
+
 def in_guilds(*guild_ids):
     def predicate(ctx):
         if ctx.guild is None or ctx.guild.id not in guild_ids:
