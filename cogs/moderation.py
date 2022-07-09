@@ -13,7 +13,7 @@ class Action:
     user: nextcord.Member
     guild: nextcord.Guild
     reason: str = None
-    duration: int = None
+    duration: datetime = None
 
     async def notify_user(self, ctx):
         embed = nextcord.Embed(
@@ -164,7 +164,7 @@ class Moderation(commands.Cog):
 
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
     @commands.command()
-    async def mute(self, ctx, member: nextcord.Member, duration, *, reason=None):
+    async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeDelta, *, reason=None):
         """Mute a member."""
 
         if member.communication_disabled_until is not None:
