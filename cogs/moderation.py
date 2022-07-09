@@ -137,8 +137,7 @@ class Moderation(commands.Cog):
     async def purge(self, ctx, count: int):
         """Delete a number of messages from a channel."""
 
-        await ctx.message.delete()
-        await ctx.channel.purge(limit=count, check=lambda m: not m.pinned)
+        await ctx.channel.purge(limit=count + 1, check=lambda m: not m.pinned)
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
