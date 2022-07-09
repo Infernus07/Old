@@ -2,6 +2,7 @@ from .views import Confirmation
 
 __all__ = (
     "get_confirmation",
+    "sub"
 )
 
 
