@@ -1,6 +1,5 @@
 from datetime import datetime
 import plasma
-from plasma import checks
 
 import nextcord
 from nextcord.ext import commands
@@ -26,7 +25,7 @@ class Bot(commands.Cog):
         elif isinstance(error, (commands.BadArgument, commands.CheckFailure, commands.UserInputError)):
             embed = nextcord.Embed(
                 color=nextcord.Color.red(),
-                description=f"<:_:990273148379332678> {error}"
+                description=f"{plasma.CROSS} {error}"
             )
             await ctx.channel.send(embed=embed)
 
@@ -38,7 +37,7 @@ class Bot(commands.Cog):
     async def on_application_command_error(self, interaction, error):
         embed = nextcord.Embed(
             color=nextcord.Color.red(),
-            description=f"<:_:990273148379332678> {error}"
+            description=f"{plasma.CROSS} {error}"
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -47,7 +46,7 @@ class Bot(commands.Cog):
         if before.content != after.content:
             await self.bot.process_commands(after)
 
-    @checks.community_server_only()
+    @plasma.community_server_only()
     @commands.command()
     async def ping(self, ctx):
         """View the bot's latency."""
@@ -56,7 +55,7 @@ class Bot(commands.Cog):
         ms = int((message.created_at - ctx.message.created_at).total_seconds() * 1000)
         await message.edit(content=f"Pong! **{ms} ms**")
 
-    @checks.community_server_only()
+    @plasma.community_server_only()
     @commands.command()
     async def report(self, ctx, member: nextcord.Member, *, reason=None):
         """"Reports a member to the server's staff."""
@@ -66,7 +65,7 @@ class Bot(commands.Cog):
 
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
-            description="<:_:990273123444207636> User reported to the proper authorities."
+            description=f"{plasma.CHECK} User reported to the proper authorities."
         )
         await ctx.channel.send(embed=embed)
 
