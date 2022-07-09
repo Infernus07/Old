@@ -14,14 +14,14 @@ class Action:
     reason: str = None
     duration: datetime = None
 
-    async def confirm(self):
+    async def notify_user(self):
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
             description=f"{plasma.CHECK} ***{self.target.display_name} was {self.past_tense}.***"
         )
         await self.context.send(embed=embed)
 
-    async def notify(self):
+    async def notify_target(self):
         embed = nextcord.Embed(
             color=self.color,
             title=f"{self.emoji} {self.past_tense.title()}",
@@ -56,9 +56,9 @@ class Kick(Action):
     color = nextcord.Color.orange()
 
     async def execute(self):
-        await self.notify()
+        await self.notify_target()
         await self.context.guild.kick(self.target, reason=self.reason or "No reason.")
-        await self.confirm()
+        await self.notify_user()
         await self.log()
 
 
@@ -69,8 +69,8 @@ class Warn(Action):
     color = nextcord.Color.orange()
 
     async def execute(self):
-        await self.confirm()
-        await self.notify()
+        await self.notify_user()
+        await self.notify_target()
         await self.log()
 
 
@@ -82,8 +82,8 @@ class Mute(Action):
 
     async def execute(self):
         await self.target.timeout(self.duration, reason=self.reason or "No reason.")
-        await self.confirm()
-        await self.notify()
+        await self.notify_user()
+        await self.notify_target()
         await self.log()
 
 
@@ -95,8 +95,8 @@ class Unmute(Action):
 
     async def execute(self):
         await self.target.timeout(None, reason=self.reason or "No reason.")
-        await self.confirm()
-        await self.notify()
+        await self.notify_user()
+        await self.notify_target()
         await self.log()
 
 
@@ -107,9 +107,9 @@ class Ban(Action):
     color = nextcord.Color.red()
 
     async def execute(self):
+        await self.notify_target()
         await self.context.guild.ban(self.target, reason=self.reason or "No reason")
-        await self.confirm()
-        await self.notify()
+        await self.notify_user()
         await self.log()
 
 
@@ -121,8 +121,7 @@ class Unban(Action):
 
     async def execute(self):
         await self.context.guild.unban(self.target, reason=self.reason or "No reason")
-        await self.confirm()
-        await self.notify()
+        await self.notify_user()
         await self.log()
 
 
