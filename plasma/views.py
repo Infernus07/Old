@@ -4,7 +4,8 @@ import nextcord
 
 __all__ = (
     "Confirmation",
-    "Pagination"
+    "Pagination",
+    "get_confirmation"
 )
 
 
@@ -73,3 +74,10 @@ class Pagination(nextcord.ui.View):
     async def on_timeout(self):
         with suppress(nextcord.NotFound):
             await self.message.edit(view=None)
+
+
+async def get_confirmation(ctx, message):
+    view = Confirmation(ctx)
+    view.message = await ctx.channel.send(message, view=view)
+    await view.wait()
+    return view.result
