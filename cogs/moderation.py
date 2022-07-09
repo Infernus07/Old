@@ -141,6 +141,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
     @commands.command()
     async def purge(self, ctx, count: int):
@@ -149,6 +150,7 @@ class Moderation(commands.Cog):
         await ctx.message.delete()
         await ctx.channel.purge(limit=count, check=lambda m: not m.pinned)
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
     @commands.command()
     async def kick(self, ctx, member: nextcord.Member, *, reason=None):
@@ -162,6 +164,7 @@ class Moderation(commands.Cog):
         )
         await action.execute(ctx)
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
     @commands.command()
     async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeDelta, *, reason=None):
@@ -179,6 +182,7 @@ class Moderation(commands.Cog):
         )
         await action.execute(ctx)
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
     @commands.command()
     async def unmute(self, ctx, member: nextcord.Member, *, reason=None):
@@ -195,6 +199,7 @@ class Moderation(commands.Cog):
         )
         await action.execute(ctx)
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
     @commands.command()
     async def ban(self, ctx, member: nextcord.Member, *, reason=None):
@@ -217,6 +222,7 @@ class Moderation(commands.Cog):
         )
         await action.execute(ctx)
 
+    @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
     @commands.command()
     async def unban(self, ctx, member: nextcord.User, *, reason=None):
