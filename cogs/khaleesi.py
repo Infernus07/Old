@@ -1,4 +1,5 @@
 import asyncio
+import plasma
 import requests
 
 import nextcord
@@ -51,7 +52,7 @@ class Khaleesi(commands.Cog):
                 "Shiny" in message.content and
                 len(message.mentions) > 0
             ):
-                name = message.content.replace("✨", "").replace("*", "").replace("Pinging", "").replace("Shiny", "").replace("Hunters", "").strip().lower()
+                name = plasma.sub(message.content, ("✨", "*", "Pinging", "Shiny", "Hunters")).lower()
                 await self.process(message, 933538406414319637, name)
 
     @nextcord.slash_command(guild_ids=[860180439666917416], description="Deletes the current channel.")
