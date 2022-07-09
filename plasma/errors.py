@@ -1,7 +1,5 @@
 __all__ = (
-    "DiscordException",
     "NotInGuild",
-    "PokemonNotFound"
 )
 
 class DiscordException(Exception):
@@ -15,8 +13,3 @@ class DiscordException(Exception):
 
 class NotInGuild(DiscordException):
     pass
-
-
-class PokemonNotFound(DiscordException):
-    def __init__(self, pokemon_name):
-        super().__init__(f"Could not find a pokemon matching `{pokemon_name}`.")
