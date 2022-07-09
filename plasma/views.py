@@ -9,10 +9,10 @@ __all__ = (
 
 
 class Confirmation(nextcord.ui.View):
-    def __init__(self, context):
+    def __init__(self, ctx):
         super().__init__(timeout=30)
         self.result = None
-        self.ctx = context
+        self.ctx = ctx
 
     async def interaction_check(self, interaction):
         if interaction.user != self.ctx.author:
@@ -42,10 +42,10 @@ class Confirmation(nextcord.ui.View):
 
 
 class Pagination(nextcord.ui.View):
-    def __init__(self, context, pages):
+    def __init__(self, ctx, pages):
         super().__init__(timeout=80)
         self.paging = 0
-        self.ctx = context
+        self.ctx = ctx
         self.pages = pages
 
     async def interaction_check(self, interaction):
