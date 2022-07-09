@@ -1,4 +1,4 @@
-import itertools
+import itertool
 
 import nextcord
 from nextcord.ext import commands
