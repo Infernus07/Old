@@ -59,7 +59,6 @@ class Pagination(nextcord.ui.View):
         self.paging -= 1
         if self.paging == -1:
             self.paging = len(self.pages) - 1
-
         await self.message.edit(embed=self.pages[self.paging], view=self)
 
     @nextcord.ui.button(emoji="\N{BLACK RIGHT-POINTING TRIANGLE}")
@@ -67,7 +66,6 @@ class Pagination(nextcord.ui.View):
         self.paging += 1
         if self.paging == len(self.pages):
             self.paging = 0
-
         await self.message.edit(embed=self.pages[self.paging], view=self)
 
     async def on_timeout(self):
