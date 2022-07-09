@@ -4,6 +4,8 @@ COGS = (
     "bot",
     "invite_tracker",
     "khaleesi",
+    "misc",
+    "moderation",
     "mongo",
     "names",
     "reaction_roles",
