@@ -1,45 +1,10 @@
-COGS = (
-    "automod",
-    "autopost",
-    "bot",
-    "help",
-    "invite_tracker",
-    "khaleesi",
-    "misc",
-    "moderation",
-    "mongo",
-    "names",
-    "reaction_roles",
-    "reactions",
-    "spamming"
-)
-
 OWNERS = (
     961592504585695233, # Infernus
 )
 
-BANNED_WORDS = (
-    "$uck",
-    "asshole",
-    "b!tch",
-    "b1tch",
-    "bitch",
-    "blowjob",
-    "c0ck",
-    "cnut",
-    "cock",
-    "d1ck",
-    "dick",
-    "fuck",
-    "fuk",
-    "hoe",
-    "nigg",
-    "penis",
-    "pussy",
-    "sex",
-    "s3xy",
-    "vagina"
-)
+COGS = open("assets/cogs.txt", "r").read().splitlines()
+BANNED_WORDS = open("assets/banned_words.txt", "r").read().splitlines()
+POKEMONS = open("assets/pokemons.txt", "r").read().splitlines()
 
 CROSS = "<:_:990273148379332678>"
 CHECK = "<:_:990273123444207636>"
