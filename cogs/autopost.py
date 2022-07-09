@@ -47,7 +47,7 @@ class AutoPost(commands.Cog):
         if (
             message.guild is None
             or message.guild.id != 994266247577485473
-            or message.author != self.bot.user
+            or message.author == self.bot.user
         ):
             return
 
