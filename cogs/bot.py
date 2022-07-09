@@ -22,7 +22,7 @@ class Bot(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send_help(ctx.command)
 
-        elif isinstance(error, (plasma.PokemonNotFound, commands.BadArgument, commands.CheckFailure, commands.UserInputError)):
+        elif isinstance(error, (commands.BadArgument, commands.CheckFailure, commands.UserInputError)):
             embed = nextcord.Embed(
                 color=nextcord.Color.red(),
                 description=f"{plasma.CROSS} {error}"
