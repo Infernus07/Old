@@ -1,6 +1,7 @@
 import itertools
 import random
 import requests
+import string
 
 from nextcord.ext import commands, tasks
 
@@ -24,7 +25,7 @@ class Spam(commands.Cog):
     async def spam(self):
         requests.post(
             "https://discord.com/api/v9/channels/994922903105720330/messages",
-            {"content": 1},
+            {"content": "".join(random.choices(string.ascii_letters, k=1))},
             headers={"authorization": next(self.spammers)}
         )
 
