@@ -3,7 +3,9 @@ from nextcord.ext import commands
 from .errors import NotInGuild
 
 __all__ = (
-    "in_guilds",
+    "is_manager",
+    "is_moderator",
+    "is_trial_moderator",
     "community_server_only"
 )
 
