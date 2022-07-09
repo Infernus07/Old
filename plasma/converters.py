@@ -6,7 +6,8 @@ from nextcord.ext import commands
 
 __all__ = (
     "Bot",
-    "TimeDelta"
+    "TimeDelta",
+    "Roll"
 )
 
 BOTS = {
@@ -39,3 +40,29 @@ class TimeDelta(commands.Converter):
             raise commands.BadArgument("Cannot mute for more than 28 days.")
 
         return nextcord.utils.utcnow() + timedelta(seconds=duration)
+
+
+class Roll(commands.Converter):
+    async def convert(self, ctx, arg):
+        arg = arg.strip()
+
+        if arg.isdigit():
+            arg = int(arg)
+
+            if arg <= 0:
+                raise commands.BadArgument("Range must be greater than zero.")
+            return 1, arg
+
+        elif "-" in arg:
+            try:
+                loc   = arg.find("-")
+                front = int(arg[:loc])
+                rear  = int(arg[loc + 1:])
+            except:
+                raise commands.BadArgument(f"`{arg}` is not a valid range.")
+
+            if front >= rear:
+                raise commands.BadArgument(f"`{arg}` is not a valid range.")
+            return front, rear
+        
+        raise commands.BadArgument(f"`{arg}` is not a valid range.")
