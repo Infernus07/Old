@@ -18,7 +18,6 @@ class ClusterBot(commands.AutoShardedBot):
         for i in plasma.COGS:
             self.load_extension(f"cogs.{i}")
 
-        self.add_check(commands.guild_only())
         self.run("OTkwMjE3OTA2MzMzODM5NDcx.GfVsR3.4feXv_SN_rhcjTYycU58bxa0rO1okJYs80L-Lc")
 
     @property
