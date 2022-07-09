@@ -44,10 +44,11 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.guild_id == 994266247577485473 and payload.user_id != self.bot.user.id:
+        if payload.user_id != self.bot.user.id:
             guild = self.bot.get_guild(payload.guild_id)
             user  = guild.get_member(payload.user_id)
             emoji = str(payload.emoji.id) if payload.emoji.is_custom_emoji() else payload.emoji.name
+            role = None
 
             if payload.message_id == 995008665260134491:
                 try:
@@ -73,7 +74,7 @@ class ReactionRoles(commands.Cog):
                     await message.remove_reaction(payload.emoji, user)
                     return
 
-            if role not in user.roles:
+            if role is not None and role not in user.roles:
                 await user.add_roles(role)
 
                 with suppress(nextcord.Forbidden):
@@ -82,10 +83,11 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        if payload.guild_id == 994266247577485473 and payload.user_id != self.bot.user.id:
+        if payload.user_id != self.bot.user.id:
             guild = self.bot.get_guild(payload.guild_id)
             user  = guild.get_member(payload.user_id)
             emoji = str(payload.emoji.id) if payload.emoji.is_custom_emoji() else payload.emoji.name
+            role = None
 
             if payload.message_id == 995008665260134491:
                 role = guild.get_role(COLOR_MENU[emoji])
@@ -96,7 +98,7 @@ class ReactionRoles(commands.Cog):
             elif payload.message_id == 995031116681592832:
                 role = guild.get_role(ACCESS_MENU[emoji])
 
-            if role in user.roles:
+            if role is not None and role in user.roles:
                 await user.remove_roles(role)
 
                 with suppress(nextcord.Forbidden):
