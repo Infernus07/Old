@@ -100,11 +100,11 @@ class Misc(commands.Cog):
     async def flip(self, ctx):
         """Flip a coin."""
 
-        await ctx.reply(random.choice("Tails", "Heads"), mention_author=False)
+        await ctx.reply(random.choice(["Tails", "Heads"]))
 
     @plasma.community_server_only()
     @commands.command()
-    async def roll(self, ctx, *, range: plasma.Roll = None):
+    async def roll(self, ctx, *, range: plasma.RollConverter = None):
         """Roll a dice."""
 
         range = range or (1, 100)
