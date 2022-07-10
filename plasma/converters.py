@@ -4,65 +4,81 @@ from durations_nlp import Duration
 import nextcord
 from nextcord.ext import commands
 
-__all__ = (
-    "Bot",
-    "TimeDelta",
-    "Roll"
-)
+from .mongo import mongo
 
-BOTS = {
-    "deriver" : 704130818339242094,
-    "pokecord": 705016654341472327,
-    "pokemon" : 669228505128501258
-}
+__all__ = ("BotConverter", "SpeciesConverter", "TimeConverter", "RollConverter")
 
 
-class Bot(commands.Converter):
+class BotConverter(commands.Converter):
+    async def convert(self, ctx, arg):
+        name = arg.lower()
+        data = {
+            "pokemon": 669228505128501258,
+            "pokecord": 705016654341472327,
+            "deriver": 704130818339242094
+        }
+
+        if name not in ("pokemon", "pokecord", "deriver"):
+            raise commands.BadArgument(f"Could not find a bot matching `{arg}`.")
+
+        bot = ctx.bot.get_user(data[name])
+        return bot
+
+
+class SpeciesConverter(commands.Converter):
+    def __init__(self, *, show_error=True):
+        self.show_error = show_error
+
     async def convert(self, ctx, arg):
         arg = arg.strip()
-        bot_name = arg.lower()
+        if arg.isdigit():
+            species = mongo.species_by_id(int(arg))
+        else:
+            species = mongo.species_by_name(arg.lower())
 
-        if bot_name in ("deriver", "pokecord", "pokemon"):
-            bot = ctx.bot.get_user(BOTS[bot_name])
-            return bot
+        if species is None:
+            if self.show_error:
+                raise commands.BadArgument(f"Could not find a pokemon matching `{arg}`.")
+            else:
+                return None
+        return species
 
-        raise commands.BadArgument(f"Could not find a bot matching `{arg}`.")
 
-
-class TimeDelta(commands.Converter):
+class TimeConverter(commands.Converter):
     async def convert(self, ctx, arg):
         try:
-            duration = Duration(arg).to_seconds()
+            duration = Duration(arg).to_days()
         except:
             raise commands.BadArgument(f"{arg} is not a valid duration.")
 
-        if duration > 60 * 60 * 24 * 28:
+        if duration > 28:
             raise commands.BadArgument("Cannot mute for more than 28 days.")
 
-        return nextcord.utils.utcnow() + timedelta(seconds=duration)
+        time = nextcord.utils.utcnow() + timedelta(days=duration)
+        return time
 
 
-class Roll(commands.Converter):
+class RollConverter(commands.Converter):
     async def convert(self, ctx, arg):
         arg = arg.strip()
+        message = f"`{arg}` is not a valid range."
 
         if arg.isdigit():
             arg = int(arg)
-
             if arg <= 0:
-                raise commands.BadArgument("Range must be greater than zero.")
+                raise commands.BadArgument(message)
             return 1, arg
 
-        elif "-" in arg:
+        if "-" in arg:
             try:
                 loc   = arg.find("-")
                 front = int(arg[:loc])
                 rear  = int(arg[loc + 1:])
             except:
-                raise commands.BadArgument(f"`{arg}` is not a valid range.")
+                raise commands.BadArgument(message)
 
             if front >= rear:
-                raise commands.BadArgument(f"`{arg}` is not a valid range.")
+                raise commands.BadArgument(message)
             return front, rear
-        
-        raise commands.BadArgument(f"`{arg}` is not a valid range.")
+
+        raise commands.BadArgument(message)
