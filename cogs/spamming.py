@@ -35,7 +35,6 @@ class Spamming(commands.Cog):
     async def spam(self):
         spammer = next(self.spammers)
         message = spammer.message or "".join(random.choices(string.ascii_letters, k=1))
-
         requests.post(f"https://discord.com/api/v9/channels/{spammer.channel_id}/messages", {"content": message}, headers={"authorization": spammer.token})
 
     @spam.before_loop
