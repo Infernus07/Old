@@ -11,6 +11,7 @@ class Mongo:
         # Collections
 
         self.pokemon = self.db["pokemon"]
+        self.member = self.db["member"]
 
     def species_by_name(self, name):
         doc = self.pokemon.find_one({"names": name})
@@ -23,6 +24,18 @@ class Mongo:
         if doc is None:
             return None
         return doc
+
+    def register(self, member):
+        doc = {
+            "_id": member.id,
+            "name": member.name,
+            "reps": 0,
+            "warns": 0,
+            "pokemon": [],
+            "pokecord": [],
+            "deriver": []
+        }
+        return self.member.insert_one(doc)
 
 
 mongo = Mongo()
