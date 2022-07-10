@@ -197,6 +197,23 @@ class Moderation(commands.Cog):
         await action.remove(1)
 
     @plasma.community_server_only()
+    @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.command()
+    async def warnings(self, ctx, *, member: nextcord.Member = None):
+        """Shows warnings of a member."""
+
+        member = member or ctx.author
+        doc = plasma.mongo.member.find_one({"_id": member.id})
+
+        embed = nextcord.Embed(
+            color=nextcord.Color.blue(),
+            title="Warnings",
+            description=doc["warns"],
+            timestamp=datetime.utcnow()
+        )
+        await ctx.send(embed=embed)
+
+    @plasma.community_server_only()
     @commands.is_owner()
     @commands.command(aliases=["cwarn"])
     async def clearwarn(self, ctx, member: nextcord.Member, *, count: int = 1):
