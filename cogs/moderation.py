@@ -69,6 +69,7 @@ class Warn(Action):
     color = nextcord.Color.orange()
 
     async def execute(self):
+        plasma.mongo.update_member(self.target, {"$inc": {"warns": 1}})
         await self.notify_user()
         await self.notify_target()
         await self.log()
@@ -151,6 +152,20 @@ class Moderation(commands.Cog):
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         action = Kick(ctx, member, reason)
+        await action.execute()
+
+    @plasma.community_server_only()
+    @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.command()
+    async def warn(self, ctx, member: nextcord.Member, *, reason=None):
+        """Warn a member."""
+
+        await ctx.message.delete()
+
+        if ctx.author.top_role <= self.target.top_role:
+            raise commands.BadArgument("That user is a mod/admin, I can't do that.")
+
+        action = Warn(ctx, member, reason)
         await action.execute()
 
     @plasma.community_server_only()
