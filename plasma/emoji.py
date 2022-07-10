@@ -3,7 +3,7 @@ from __future__ import annotations
 __all__ = ("Emoji",)
 
 
-class Emoji:
+class Emoji
     def __init__(self, id, *, animated=False):
         self.id = id
         self.animated = animated
