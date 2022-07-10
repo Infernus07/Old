@@ -13,21 +13,24 @@ class Bot(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, (plasma.NotInGuild, commands.CommandNotFound, commands.MissingPermissions, commands.CheckAnyFailure)):
+        if isinstance(error, (plasma.CommandError, commands.CommandNotFound, commands.CheckAnyFailure)):
             return
 
-        elif isinstance(error, commands.CommandOnCooldown):
+        if isinstance(error, commands.CommandOnCooldown):
             await ctx.message.add_reaction("\N{HOURGLASS}")
+            return
 
-        elif isinstance(error, commands.MissingRequiredArgument):
+        if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send_help(ctx.command)
+            return
 
-        elif isinstance(error, (commands.BadArgument, commands.CheckFailure, commands.UserInputError)):
+        if isinstance(error, (commands.BadArgument, commands.CheckFailure, commands.UserInputError)):
             embed = nextcord.Embed(
                 color=nextcord.Color.red(),
-                description=f"{plasma.CROSS} {error}"
+                description=f"{plasma.Emoji.cross()} {error}"
             )
-            await ctx.channel.send(embed=embed)
+            await ctx.send(embed=embed)
+            return
 
     @commands.Cog.listener()
     async def on_error(self, *args, **kwargs):
@@ -37,7 +40,7 @@ class Bot(commands.Cog):
     async def on_application_command_error(self, interaction, error):
         embed = nextcord.Embed(
             color=nextcord.Color.red(),
-            description=f"{plasma.CROSS} {error}"
+            description=f"{plasma.Emoji.cross()} {error}"
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
@@ -46,12 +49,13 @@ class Bot(commands.Cog):
         if before.content != after.content:
             await self.bot.process_commands(after)
 
+    
     @plasma.community_server_only()
     @commands.command()
     async def ping(self, ctx):
         """View the bot's latency."""
 
-        message = await ctx.channel.send("Pong!")
+        message = await ctx.send("Pong!")
         ms = int((message.created_at - ctx.message.created_at).total_seconds() * 1000)
         await message.edit(content=f"Pong! **{ms} ms**")
 
@@ -65,9 +69,9 @@ class Bot(commands.Cog):
 
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
-            description=f"{plasma.CHECK} User reported to the proper authorities."
+            description=f"{plasma.Emoji.check()} User reported to the proper authorities."
         )
-        await ctx.channel.send(embed=embed)
+        await ctx.send(embed=embed)
 
         embed = nextcord.Embed(
             color=nextcord.Color.blue(),
