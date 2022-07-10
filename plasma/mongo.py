@@ -37,5 +37,12 @@ class Mongo:
         }
         return self.member.insert_one(doc)
 
+    def update_member(self, member, update):
+        doc = self.member.find_one({"_id": member.id})
+        if doc is None:
+            self.register(member)
+
+        return self.member.update_one({"_id": member.id}, update)
+
 
 mongo = Mongo()
