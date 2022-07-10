@@ -5,7 +5,7 @@ import textwrap
 from nextcord.ext import commands, tasks
 
 
-class _AutoPost:
+class Post:
     def __init__(self, channels, message, *, each=1):
         self.channels = itertools.cycle(channels)
         self.do_post = itertools.cycle([True] + [False] * (each - 1))
@@ -13,13 +13,13 @@ class _AutoPost:
 
 
 POSTS = [
-    _AutoPost(
+    Post(
         [994921158589829181],
         """
         **Reminder:** Get access roles from <#995006311391567983> to get access to various channels.
         """
     ),
-    _AutoPost(
+    Post(
         [994921338017947661],
         """
         **Reminder:** This channel is for shiny hunters.
@@ -52,7 +52,6 @@ class AutoPost(commands.Cog):
             return
 
         self.updated[message.channel.id] = True
-            
 
     @tasks.loop(minutes=5)
     async def autopost(self):
