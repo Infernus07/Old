@@ -74,6 +74,20 @@ class Warn(Action):
         await self.notify_target()
         await self.log()
 
+    async def remove(self, n):
+        doc = plasma.mongo.find_member(self.target)
+        count = 0 if doc["warns"] - n <= 0 else doc["warns"] - n
+
+        if doc["warns"] == 0:
+            raise commands.BadArgument(f"{self.target.display_name} does not have any warns.")
+
+        plasma.mongo.update_member(self.target, {"$set": {"warns": count}})
+        embed = nextcord.Embed(
+            color=nextcord.Color.green(),
+            description=f"{plasma.Emoji.check()} ***Removed {n} warnings from {self.target.display_name}.***"
+        )
+        await self.context.send(embed=embed)
+
 
 class Mute(Action):
     type = "mute"
@@ -167,6 +181,31 @@ class Moderation(commands.Cog):
 
         action = Warn(ctx, member, reason)
         await action.execute()
+
+    @plasma.community_server_only()
+    @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.command(aliases=["rwarn"])
+    async def removewarn(self, ctx, *, member: nextcord.Member):
+        """Remove warn."""
+
+        await ctx.message.delete()
+
+        if ctx.author == member:
+            raise commands.BadArgument("You cannot remove your warns.")
+
+        action = Warn(ctx, member)
+        await action.remove(1)
+
+    @plasma.community_server_only()
+    @commands.is_owner()
+    @commands.command(aliases=["cwarn"])
+    async def clearwarn(self, ctx, member: nextcord.Member, *, count: int = 1):
+        """Clear warn."""
+
+        await ctx.message.delete()
+        
+        action = Warn(ctx, member)
+        await action.remove(count)
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
