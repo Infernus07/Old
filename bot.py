@@ -9,7 +9,7 @@ class ClusterBot(commands.AutoShardedBot):
         super().__init__(
             commands.when_mentioned_or("?", ">", "-"),
             activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="Plasma"),
-            allowed_mentions=nextcord.AllowedMentions(everyone=False),
+            allowed_mentions=nextcord.AllowedMentions(everyone=False, replied_user=False),
             case_insensitive=True,
             intents=nextcord.Intents.all(),
             owner_ids=plasma.OWNERS
@@ -20,12 +20,13 @@ class ClusterBot(commands.AutoShardedBot):
 
         self.run("OTkwMjE3OTA2MzMzODM5NDcx.GfVsR3.4feXv_SN_rhcjTYycU58bxa0rO1okJYs80L-Lc")
 
-    @property
-    def mongo(self):
-        return self.get_cog("Mongo")
+    async def do_startup_tasks(self):
+        message = await self.get_channel(995006311391567983).fetch_message(995666569738862692)
+        await message.edit(view=plasma.ColorView())
 
     async def on_ready(self):
-        print(f"Logged in as {self.user}")
+        print(f"Logged in as {self.user}.")
+        await self.do_startup_tasks()
 
 
 if __name__ == "__main__":
