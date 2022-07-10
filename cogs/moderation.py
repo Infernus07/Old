@@ -17,7 +17,7 @@ class Action:
     async def notify_user(self):
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
-            description=f"{plasma.CHECK} ***{self.target.display_name} was {self.past_tense}.***"
+            description=f"{plasma.Emoji.check()} ***{self.target.display_name} was {self.past_tense}.***"
         )
         await self.context.send(embed=embed)
 
@@ -156,7 +156,7 @@ class Moderation(commands.Cog):
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
     @commands.command()
-    async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeDelta, *, reason=None):
+    async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeConverter, *, reason=None):
         """Mute a member."""
 
         await ctx.message.delete()
