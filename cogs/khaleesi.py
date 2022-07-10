@@ -15,7 +15,6 @@ class Khaleesi(commands.Cog):
     def redirect(self, message):
         category = nextcord.utils.get(message.guild.categories, id=863437651348815872)
         channels = ""
-
         for i in category.channels:
             if i != message.channel:
                 channels += f"<#{i.id}> "
@@ -58,6 +57,7 @@ class Khaleesi(commands.Cog):
         ):
             name = plasma.sub(message.content, ("✨", "*", "Pinging", "Shiny", "Hunters")).lower()
             await self.process(message, 933538406414319637, name)
+            self.redirect(message)
             return
 
     @nextcord.slash_command(guild_ids=[860180439666917416], description="Deletes the current channel.")
