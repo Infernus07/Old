@@ -60,6 +60,7 @@ class Bot(commands.Cog):
         await message.edit(content=f"Pong! **{ms} ms**")
 
     @plasma.community_server_only()
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def report(self, ctx, member: nextcord.Member, *, reason=None):
         """"Reports a member to the server's staff."""
