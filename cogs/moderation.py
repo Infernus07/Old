@@ -148,6 +148,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def purge(self, ctx, count: int):
         """Delete a number of messages from a channel."""
@@ -156,6 +157,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def kick(self, ctx, member: nextcord.Member, *, reason=None):
         """Kick a member."""
@@ -170,6 +172,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def warn(self, ctx, member: nextcord.Member, *, reason=None):
         """Warn a member."""
@@ -184,6 +187,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command(aliases=["rwarn"])
     async def removewarn(self, ctx, *, member: nextcord.Member):
         """Remove warn."""
@@ -198,6 +202,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def warnings(self, ctx, *, member: nextcord.Member = None):
         """Shows warnings of a member."""
@@ -226,6 +231,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def mute(self, ctx, member: nextcord.Member, duration: plasma.TimeConverter, *, reason=None):
         """Mute a member."""
@@ -243,6 +249,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_moderator())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def unmute(self, ctx, member: nextcord.Member, *, reason=None):
         """Unmute a member."""
@@ -257,6 +264,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def ban(self, ctx, member: nextcord.Member, *, reason=None):
         """Ban a member."""
@@ -280,6 +288,7 @@ class Moderation(commands.Cog):
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_manager())
+    @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
     async def unban(self, ctx, member: nextcord.User, *, reason=None):
         """Unban a member."""
