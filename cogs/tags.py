@@ -19,7 +19,7 @@ class Tags(commands.Cog):
         for i in range(total):
             embed = nextcord.Embed(color=nextcord.Color.blue(), description="")
             front = rear
-            rear += 20
+            rear += per_page
 
             for j in range(front, rear):
                 embed.description += f"{j+1}. {entries[j]['_id']}\n"
