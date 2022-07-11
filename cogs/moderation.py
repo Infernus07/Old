@@ -208,7 +208,7 @@ class Moderation(commands.Cog):
         """Shows warnings of a member."""
 
         member = member or ctx.author
-        doc = plasma.mongo.member.find_one({"_id": member.id})
+        doc = plasma.mongo.find_member(member)
 
         embed = nextcord.Embed(
             color=nextcord.Color.blue(),
