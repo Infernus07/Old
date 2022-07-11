@@ -28,24 +28,24 @@ class Action:
             description=f"You have been {self.past_tense}",
             timestamp=datetime.utcnow()
         )
-        embed.add_field(name="Guild", value=self.guild)
+        embed.add_field(name="Guild", value=self.context.guild)
         embed.add_field(name="Reason", value=self.reason or "No reason provided.")
 
         with suppress(nextcord.NotFound):
             await self.target.send(embed=embed)
 
-    async def log(self):
+    async def log(self, ctx):
         embed = nextcord.Embed(
             color=self.color,
             timestamp=datetime.utcnow()
         )
-        embed.set_author(name=f"{self.type.title()} | {self.target}", icon_url=self.target.display_avatar)
+        embed.set_author(name=f"{plasma.title(self.type)} | {self.target}", icon_url=self.target.display_avatar)
         embed.set_footer(text=f"ID: {self.target.id}")
         embed.add_field(name="User", value=self.target.mention)
         embed.add_field(name="Moderator", value=self.user.mention)
         embed.add_field(name="Reason", value=self.reason or "No reason.")
 
-        channel = self.guild.get_channel(994922728987557918)
+        channel = self.context.guild.get_channel(994922728987557918)
         await channel.send(embed=embed)
 
 
