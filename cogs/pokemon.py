@@ -54,6 +54,15 @@ class Pokemon(commands.Cog):
             return False
         return True
 
+    async def send(self, ctx, message, *, image_url=None):
+        embed = nextcord.Embed(
+            color=nextcord.Color.green(),
+            description=f"{plasma.Emoji.check()} {message}"
+        )
+        if image_url is not None:
+            embed.set_thumbnail(url=image_url)
+        await ctx.send(embed=embed)
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if (
@@ -185,7 +194,93 @@ class Pokemon(commands.Cog):
                 embed = self.make_starboard_embed(message)
                 await channel.send(f"<#{message.channel.id}>", embed=embed)
 
-            hunter = list(self.col.find({name: doc["name"]}))
+            hunter = list(plasma.mongo.member.find({name: doc["name"]}))
             if len(hunter) > 0:
                 hunters = " ".join(f"<@{hunter['_id']}>")
                 await message.channel.send(f"**{plasma.title(doc['name'])}:** {hunters}")
+
+
+    @plasma.community_and_test_server_only()
+    @commands.command()
+    async def add(self, ctx, bot: plasma.BotConverter, *, pokemon: plasma.SpeciesConverter):
+        """Adds your tag to auto pinging list."""
+
+        name = bot.name.replace("é", "e").lower()
+        doc = plasma.mongo.find_member(ctx.author)
+
+        if (
+            len(doc[name.lower()]) > 0
+            and not ctx.author.id in plasma.OWNERS
+            and not any(ctx.author.id == x for x in (994927712135286828, 994927785351053362, 995608606609252406))
+            and not ctx.guild.premium_subscriber_role in ctx.author.roles
+        ):
+            raise commands.BadArgument("You must be a server booster to add more than 1 pokemon.")
+
+        if pokemon["name"] in doc[name]:
+            raise commands.BadArgument("That pokemon already exists in your collection.")
+
+        plasma.mongo.update_member(ctx.author, {"$push": {name: pokemon["name"]}})
+        await self.send(
+            ctx, f"Added {ctx.author.mention} to `{pokemon['name']}` tag.",
+            image_url=f"https://raw.githubusercontent.com/Infernus07/data/master/pokemons/normal/{pokemon['_id']}.png"
+        )
+
+    @plasma.community_and_test_server_only()
+    @commands.command()
+    async def remove(self, ctx, bot: plasma.BotConverter, *, pokemon: plasma.SpeciesConverter):
+        """Removes your tag from auto pinging list."""
+
+        name = bot.name.replace("é", "e").lower()
+        doc = plasma.mongo.find_member(ctx.author)
+
+        if pokemon["name"] not in doc[name]:
+            raise commands.BadArgument("You don't have that pokemon in your list.")
+
+        plasma.mongo.update_member(ctx.author, {"$pull": {name: pokemon["name"]}})
+        await self.send(
+            ctx, f"Removed {ctx.author.mention} from `{pokemon['name']}` tag.",
+            image_url=f"https://raw.githubusercontent.com/Infernus07/data/master/pokemons/normal/{pokemon['_id']}.png"
+        )
+
+    @plasma.community_and_test_server_only()
+    @commands.command()
+    async def clear(self, ctx, bot: plasma.BotConverter):
+        """Removes all of your tags from auto pinging list."""
+
+        name = bot.name.replace("é", "e").lower()
+        doc = plasma.mongo.find_member(ctx.author)
+
+        if len(doc[name]) == 0:
+            raise commands.BadArgument(f"You don't have any tag in {bot.name} bot.")
+
+        confirm = await plasma.get_confirmation(ctx, f"Are you sure you want to remove **all** of your tags in **{bot.name}** bot?")
+        if confirm:
+            plasma.mongo.update_member(ctx.author, {"$set": {name: []}})
+            await self.send(ctx, f"Removed all of your tags from {bot.name} bot.", image_url=bot.avatar)
+
+    @plasma.community_and_test_server_only()
+    @commands.command()
+    async def view(self, ctx, bot: plasma.BotConverter, *, pokemon: plasma.SpeciesConverter):
+        """Shows lists of pokemon hunters in a bot."""
+
+        name = bot.name.replace("é", "e").lower()
+        hunter = list(plasma.mongo.member.find({name: pokemon["name"]}))
+        if len(hunter) > 0:
+            hunters = " ".join(f"<@{hunter['_id']}>")
+        else:
+            hunters = "[None]"
+
+        embed = nextcord.Embed(
+            color=nextcord.Color.blue(),
+            title="Tag List: " + plasma.title(pokemon["name"]),
+            description=hunters,
+            timestamp=datetime.utcnow()
+        )
+        embed.set_author(name=bot.name, icon_url=bot.avatar)
+        embed.set_footer(text="Your ID is in this tag!" if f"<@{ctx.author.id}>" in hunters else "Your ID is not in this tag.")
+        embed.set_thumbnail(url=f"https://raw.githubusercontent.com/Infernus07/data/master/pokemons/normal/{pokemon['_id']}.png")
+
+        await ctx.send(embed=embed)
+
+def setup(bot):
+    bot.add_cog(Pokemon(bot))
