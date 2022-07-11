@@ -33,5 +33,5 @@ def community_server_only():
     return in_guilds(994266247577485473)
 
 
-def test_server_only():
-    return in_guilds(990272312144183356)
+def work_servers():
+    return in_guilds(994266247577485473, 990272312144183356)
