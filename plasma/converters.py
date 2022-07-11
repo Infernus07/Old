@@ -26,9 +26,6 @@ class BotConverter(commands.Converter):
 
 
 class SpeciesConverter(commands.Converter):
-    def __init__(self, *, show_error=True):
-        self.show_error = show_error
-
     async def convert(self, ctx, arg):
         arg = arg.strip()
         if arg.isdigit():
@@ -37,10 +34,7 @@ class SpeciesConverter(commands.Converter):
             species = mongo.species_by_name(arg.lower())
 
         if species is None:
-            if self.show_error:
-                raise commands.BadArgument(f"Could not find a pokemon matching `{arg}`.")
-            else:
-                return None
+            raise commands.BadArgument(f"Could not find a pokemon matching `{arg}`.")
         return species
 
 
