@@ -6,13 +6,16 @@ __all__ = ("FakeUser", "sub", "title", "get_confirmation")
 
 
 class FakeUser(nextcord.Object):
+    def __str__(self):
+        return str(self.id)
+
     @property
     def display_avatar(self):
         return "https://cdn.discordapp.com/embed/avatars/0.png"
 
     @property
     def mention(self):
-        return f"<@{self.id}>"
+        return "<@{0.id}>".format(self)
 
 
 def sub(text, words):
