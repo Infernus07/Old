@@ -62,7 +62,7 @@ class Automod(commands.Cog):
         ):
             return
 
-        words = plasma.profanity_words(message)
+        words = plasma.profanity_words(message.content)
         if any(x in words for x in plasma.BANNED_WORDS):
             await self.notify(message, "Watch your language!")
             return
