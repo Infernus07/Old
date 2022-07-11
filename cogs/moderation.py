@@ -163,8 +163,7 @@ class Moderation(commands.Cog):
         """Kick a member."""
 
         await ctx.message.delete()
-
-        if ctx.author.top_role <= self.target.top_role:
+        if ctx.author.top_role <= member.top_role:
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         action = Kick(ctx, member, reason)
@@ -177,6 +176,7 @@ class Moderation(commands.Cog):
     async def warn(self, ctx, member: nextcord.Member, *, reason):
         """Warn a member."""
 
+        await ctx.message.delete()
         if ctx.author.top_role <= member.top_role:
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
@@ -224,7 +224,7 @@ class Moderation(commands.Cog):
         """Clear warn."""
 
         await ctx.message.delete()
-        
+
         action = Warn(ctx, member)
         await action.remove(count)
 
@@ -236,11 +236,10 @@ class Moderation(commands.Cog):
         """Mute a member."""
 
         await ctx.message.delete()
-
         if member.communication_disabled_until is not None:
             raise commands.BadArgument(f"{member.display_name} is already muted.")
 
-        if ctx.author.top_role <= self.target.top_role:
+        if ctx.author.top_role <= member.top_role:
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         action = Mute(ctx, member, reason, duration)
@@ -254,7 +253,6 @@ class Moderation(commands.Cog):
         """Unmute a member."""
 
         await ctx.message.delete()
-
         if member.communication_disabled_until is None:
             raise commands.BadArgument(f"{member.display_name} is not muted.")
 
@@ -269,8 +267,7 @@ class Moderation(commands.Cog):
         """Ban a member."""
 
         await ctx.message.delete()
-
-        if ctx.author.top_role <= self.target.top_role:
+        if ctx.author.top_role <= member.top_role:
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         bans = await ctx.guild.bans()
@@ -291,6 +288,8 @@ class Moderation(commands.Cog):
     @commands.command()
     async def unban(self, ctx, member: nextcord.User, *, reason=None):
         """Unban a member."""
+
+        await ctx.message.delete()
 
         action = Unban(ctx, member, reason)
         bans = await ctx.guild.bans()
