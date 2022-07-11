@@ -230,7 +230,7 @@ class Tags(commands.Cog):
     async def clear(self, ctx):
         """Removes all tags that you own."""
 
-        doc = list(self.col.find({"owner": ctx.author.id}).sort("uses", -1))
+        doc = list(self.col.find({"owner_id": ctx.author.id}).sort("uses", -1))
         if len(doc) == 0:
             raise commands.BadArgument("You don't have any tags.")
 
