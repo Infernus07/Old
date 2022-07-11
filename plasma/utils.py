@@ -1,6 +1,18 @@
+import nextcord
+
 from .views import Confirmation
 
-__all__ = ("sub", "title", "get_confirmation")
+__all__ = ("FakeUser", "sub", "title", "get_confirmation")
+
+
+class FakeUser(nextcord.Object):
+    @property
+    def display_avatar(self):
+        return "https://cdn.discordapp.com/embed/avatars/0.png"
+
+    @property
+    def mention(self):
+        return f"<@{self.id}>"
 
 
 def sub(text, words):
