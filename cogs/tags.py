@@ -64,7 +64,7 @@ class Tags(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @commands.group(invoke_without_command=True, case_insensitive=True)
     async def tag(self, ctx, *, name):
         """Get a tag."""
@@ -75,7 +75,7 @@ class Tags(commands.Cog):
         await ctx.send(doc["content"], allowed_mentions=nextcord.AllowedMentions.none())
         self.col.update_one({"alias": name.lower()}, {"$inc": {"uses": 1}})
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def create(self, ctx, name, *, content):
         """Creates a new tag owned by you."""
@@ -98,7 +98,31 @@ class Tags(commands.Cog):
         self.col.insert_one(doc)
         await self.send(ctx, f"Tag `{name}` created.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
+    @commands.is_owner()
+    @tag.command()
+    async def bot(self, ctx, name, *, content):
+        """Creates a new tag owned by the bot."""
+
+        content = content.strip()
+        if self.has_profanity(content=content, name=name):
+            raise commands.BadArgument("Tags cannot have profanity.")
+
+        doc = self.col.find_one({"alias": name.lower()})
+        if doc is not None:
+            raise commands.BadArgument(f"A tag with the name `{name}` already exists.")
+
+        doc = {
+            "_id": name.lower(),
+            "alias": [name.lower()],
+            "content": content,
+            "owner_id": self.bot.user.id,
+            "uses": 0
+        }
+        self.col.insert_one(doc)
+        await self.send(ctx, f"Tag `{name}` created.")
+
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def delete(self, ctx, *, name):
         """Removes a tag that you own."""
@@ -114,7 +138,7 @@ class Tags(commands.Cog):
             self.col.delete_one({"alias": name.lower()})
             await self.send(ctx, f"Tag `{name}` deleted.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def edit(self, ctx, name, *, content):
         """Modifies an existing tag that you own."""
@@ -131,7 +155,20 @@ class Tags(commands.Cog):
         self.col.update_one({"alias": name.lower()}, {"$set": {"content": content}})
         await self.send(ctx, f"Tag `{name}` edited.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
+    @tag.command()
+    async def search(self, ctx, *, text):
+        """Searches for a tag."""
+
+        doc = list(self.col.find({"$text": {"$search": text}}).sort("uses", -1))
+        if len(doc) == 0:
+            raise commands.BadArgument("No tags found.")
+
+        pages = self.page_source(doc, title="Tags", icon_url=self.bot.user.avatar)
+        view = plasma.Pagination(ctx, pages)
+        view.message = await ctx.send(embed=pages[0], view=view)
+
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def info(self, ctx, *, name):
         """Retrieves info about a tag."""
@@ -156,7 +193,7 @@ class Tags(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def transfer(self, ctx, member: nextcord.Member, *, name):
         """Transfers a tag that you own to another user."""
@@ -188,7 +225,7 @@ class Tags(commands.Cog):
         self.col.update_one({"alias": name.lower()}, {"$set": {"owner_id": ctx.author.id}})
         await self.send(ctx, f"Successfully claimed `{name}`.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def clear(self, ctx):
         """Removes all tags that you own."""
@@ -202,7 +239,7 @@ class Tags(commands.Cog):
             self.col.delete_many({"owner_id": ctx.author.id})
             await self.send(ctx, "Deleted all of your tags.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @tag.command()
     async def alias(self, ctx, name, *, alias):
         """Creates an alias for a pre-existing tag."""
@@ -217,7 +254,7 @@ class Tags(commands.Cog):
         self.col.update_one({"alias": name.lower()}, {"$push": {"alias": alias.lower()}})
         await self.send(ctx, f"Successfully created an alias `{alias}` for `{name}`.")
 
-    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @plasma.community_and_test_server_only()
     @commands.command()
     async def tags(self, ctx, *, member: nextcord.Member = None):
         """Lists all tags."""
