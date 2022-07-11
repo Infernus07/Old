@@ -62,11 +62,10 @@ class Automod(commands.Cog):
         ):
             return
 
-        words = message.content.lower().split()
-        for i in plasma.BANNED_WORDS:
-            if any(i in x for x in words):
-                await self.notify(message, "Watch your language!")
-                return
+        words = plasma.profanity_words(message)
+        if any(x in words for x in plasma.BANNED_WORDS):
+            await self.notify(message, "Watch your language!")
+            return
 
         for code in self.invite_regex.findall(message.content):
             with suppress(nextcord.NotFound):
