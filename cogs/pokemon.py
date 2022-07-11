@@ -59,3 +59,30 @@ class Pokemon(commands.Cog):
             if self.valid_embed(message):
                 if "Guess the pokémon" in message.embeds[0].description:
                     self.bot.dispatch("spawn", message)
+
+                if "fled" in message.embeds[0].title and any(x in message.embeds[0].title.lower() for x in plasma.RARE_POKEMONS):
+                    channel = message.guild.get_channel(994921306963316798)
+                    i = 0
+
+                    async for msg in message.channel.history(limit=30):
+                        if self.valid_embed(msg):
+                            i += 1
+                            if i == 2:
+                                embed = self.make_starboard_embed(msg)
+                                await channel.send(f"<#{message.channel.id}>", embed=embed)
+                                return
+
+        if message.author.id == 669228505128501258: # Pokemon
+            if self.valid_embed(message):
+                if "Guess the pokémon" in message.embeds[0].description:
+                    self.bot.dispatch("spawn", message)
+
+        if message.author.id == 705016654341472327: # Pokecord
+            if self.valid_embed(message):
+                if "Use" in message.embeds[0].description:
+                    self.bot.dispatch("spawn", message)
+
+        if message.author.id == 704130818339242094: # Deriver
+            if self.valid_embed(message):
+                if "Guess the pokémon" in message.embeds[0].description:
+                    self.bot.dispatch("spawn", message)
