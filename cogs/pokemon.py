@@ -18,6 +18,31 @@ class Pokemon(commands.Cog):
         self.col = plasma.mongo.pokemon
         self.session = aiohttp.ClientSession()
 
+    def page_source(self, entries, *, title, icon_url, per_page=20):
+        total = len(entries) // per_page
+        pages = []
+        front, rear = 0, 0
+
+        for i in range(total):
+            embed = nextcord.Embed(color=nextcord.Color.blue(), description="")
+            front = rear
+            rear += per_page
+
+            for j in range(front, rear):
+                embed.add_field(name=plasma.title(entries[j]), value=f"{plasma.Emoji.check()} Collect!")
+            embed.set_author(name=title, icon_url=icon_url)
+            embed.set_footer(text=f"Showing {front+1}-{rear} out of {len(entries)}.")
+            pages.append(embed)
+
+        embed = nextcord.Embed(color=nextcord.Color.blue(), description="")
+        for i in range(rear, len(entries)):
+            embed.add_field(name=plasma.title(entries[i]), value=f"{plasma.Emoji.check()} Collect!")
+        embed.set_author(name=title, icon_url=icon_url)
+        embed.set_footer(text=f"Showing {rear+1}-{len(entries)} out of {len(entries)}.")
+        pages.append(embed)
+
+        return pages
+
     def get_hash(self, image):
         m = hashlib.md5()
         with open(image, "rb") as f:
@@ -281,6 +306,22 @@ class Pokemon(commands.Cog):
         embed.set_thumbnail(url=f"https://raw.githubusercontent.com/Infernus07/data/master/pokemons/normal/{pokemon['_id']}.png")
 
         await ctx.send(embed=embed)
+
+    @plasma.community_and_test_server_only()
+    @commands.command()
+    async def view(self, ctx, bot: plasma.BotConverter, *, member: nextcord.Member = None):
+        """Shows collection list of a user."""
+
+        member = member or ctx.author
+        name = bot.name.replace("é", "e").lower()
+        doc = plasma.mongo.find_member(member)
+
+        if len(doc[name]) == 0:
+            raise commands.BadArgument(f"{member.display_name} does not have any tags in `{bot.name}` bot.")
+
+        pages = self.page_source(doc[name], title=f"{member.display_name}'s Tags", icon_url=bot.avatar)
+        view = plasma.Pagination(ctx, pages)
+        view.message = await ctx.send(embed=pages[0], view=view)
 
 def setup(bot):
     bot.add_cog(Pokemon(bot))
