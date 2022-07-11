@@ -174,10 +174,10 @@ class Moderation(commands.Cog):
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
     @commands.cooldown(3, 8, commands.BucketType.user)
     @commands.command()
-    async def warn(self, ctx, member: nextcord.Member, *, reason=None):
+    async def warn(self, ctx, member: nextcord.Member, *, reason):
         """Warn a member."""
 
-        if ctx.author.top_role <= self.target.top_role:
+        if ctx.author.top_role <= member.top_role:
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         action = Warn(ctx, member, reason)
