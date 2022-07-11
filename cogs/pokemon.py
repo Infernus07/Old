@@ -93,7 +93,7 @@ class Pokemon(commands.Cog):
         if (
             message.guild is None
             or message.guild.id != 994266247577485473
-            or not isinstance(nextcord.Member)
+            or not isinstance(message.author, nextcord.Member)
             or not message.author.bot
         ):
             return
