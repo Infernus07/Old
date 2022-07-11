@@ -130,7 +130,7 @@ class Tags(commands.Cog):
         name = name.strip()
         doc = self.find(name)
 
-        if doc["owner_id"] != ctx.author.id and doc["owner_id"] not in plasma.OWNERS:
+        if ctx.author.id != doc["owner_id"] and ctx.author.id not in plasma.OWNERS:
             raise commands.BadArgument("You do not own that tag.")
 
         confirm = await plasma.get_confirmation(ctx, f"Are you sure you want to delete `{name}`?")
