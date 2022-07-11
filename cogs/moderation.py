@@ -69,10 +69,10 @@ class Warn(Action):
     color = nextcord.Color.orange()
 
     async def execute(self):
+        plasma.mongo.update_member(self.target, {"$inc": {"warns": 1}})
         await self.notify_user()
         await self.notify_target()
         await self.log()
-        plasma.mongo.update_member(self.target, {"$inc": {"warns": 1}})
 
     async def remove(self, n):
         doc = plasma.mongo.find_member(self.target)
