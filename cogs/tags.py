@@ -38,16 +38,14 @@ class Tags(commands.Cog):
 
     def has_profanity(self, *, content=None, name=None):
         if content:
-            words = content.split()
-            for i in plasma.BANNED_WORDS:
-                if any(i in x for x in words):
-                    return True
+            words = plasma.profanity_words(content)
+            if any(x in words for x in plasma.BANNED_WORDS):
+                return True
 
         if name:
-            words = name.split()
-            for i in plasma.BANNED_WORDS:
-                if any(i in x for x in words):
-                    return True
+            words = plasma.profanity_words(name)
+            if any(x in words for x in plasma.BANNED_WORDS):
+                return True
 
         return False
 
