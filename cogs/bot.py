@@ -13,9 +13,6 @@ class Bot(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if isinstance(error, (plasma.CommandError, commands.CommandNotFound, commands.CheckAnyFailure)):
-            return
-
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.message.add_reaction("\N{HOURGLASS}")
             return
@@ -31,6 +28,7 @@ class Bot(commands.Cog):
             )
             await ctx.send(embed=embed)
             return
+        return
 
     @commands.Cog.listener()
     async def on_error(self, *args, **kwargs):
