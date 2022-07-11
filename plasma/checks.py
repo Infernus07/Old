@@ -2,7 +2,7 @@ from nextcord.ext import commands
 
 from .errors import NotInGuild
 
-__all__ = ("is_manager", "is_moderator", "is_trial_moderator", "is_booster", "community_server_only")
+__all__ = ("is_manager", "is_moderator", "is_trial_moderator", "is_booster", "community_server_only", "test_server_only")
 
 
 def is_manager():
@@ -31,3 +31,7 @@ def in_guilds(*guild_ids):
 
 def community_server_only():
     return in_guilds(994266247577485473)
+
+
+def test_server_only():
+    return in_guilds(990272312144183356)
