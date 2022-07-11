@@ -58,32 +58,5 @@ class Mongo:
             
         return self.member.update_one({"_id": member.id}, update)
 
-    def insert_tag(self, *, name, content, owner_id):
-        name = name.strip()
-        content = content.strip()
-        doc = {
-            "_id": name.lower(),
-            "alias": [],
-            "content": content,
-            "owner_id": owner_id,
-            "uses": 0
-        }
-        tag = self.find_tag(name, raise_error=False)
-        if tag is not None:
-            raise commands.BadArgument(f"A tag with the name `{name}` already exists.")
-        
-        return self.tag.insert_one(doc)
-
-    def find_tag(self, name, *, raise_error=True):
-        name = name.strip()
-        doc = self.tag.find_one({"alias": name.lower()})
-        if doc is None and raise_error:
-            raise commands.BadArgument(f"Could not find a tag matching `{name}`.")
-        return doc
-
-    def update_tag(self, name, update):
-        doc = self.find_tag(name)
-        return self.tag.update_one({"_id": doc["_id"]}, update)
-
 
 mongo = Mongo()
