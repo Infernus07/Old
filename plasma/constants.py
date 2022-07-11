@@ -6,6 +6,7 @@ COGS = (
     "khaleesi",
     "misc",
     "moderation",
+    "pokemon",
     "reaction_roles",
     "spamming",
     "tags"
