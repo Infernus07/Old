@@ -11,6 +11,31 @@ class Tags(commands.Cog):
         self.bot = bot
         self.col = plasma.mongo.tag
 
+    def page_source(self, entries, *, title, icon_url, per_page=20):
+        total = len(entries) // per_page
+        pages = []
+        front, rear = 0, 0
+
+        for i in range(total):
+            embed = nextcord.Embed(color=nextcord.Color.blue(), description="")
+            front = rear
+            rear += 20
+
+            for j in range(front, rear):
+                embed.description += f"{j+1}. {entries[j]['_id']}\n"
+            embed.set_author(name=title, icon_url=icon_url)
+            embed.set_footer(text=f"Showing {front+1}-{rear} out of {len(entries)}.")
+            pages.append(embed)
+
+        embed = nextcord.Embed(color=nextcord.Color.blue(), description="")
+        for i in range(rear, len(entries)):
+            embed.description += f"{i+1}. {entries[i]['_id']}\n"
+        embed.set_author(name=title, icon_url=icon_url)
+        embed.set_footer(text=f"Showing {rear+1}-{len(entries)} out of {len(entries)}.")
+        pages.append(embed)
+
+        return pages
+
     def has_profanity(self, *, content=None, name=None):
         if content:
             words = content.split()
@@ -191,6 +216,27 @@ class Tags(commands.Cog):
 
         self.col.update_one({"alias": name.lower()}, {"$push": {"alias": alias.lower()}})
         await self.send(ctx, f"Successfully created an alias `{alias}` for `{name}`.")
+
+    @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
+    @commands.command()
+    async def tags(self, ctx, *, member: nextcord.Member = None):
+        """Lists all tags."""
+
+        if member is None:
+            doc = list(self.col.find().sort("uses", -1))
+            title = "Tags"
+            icon_url = self.bot.user.avatar
+        else:
+            doc = list(self.col.find({"owner_id": member.id}).sort("uses", -1))
+            title = f"{member.display_name}'s Tags"
+            icon_url = ctx.author.display_avatar
+
+        if len(doc) == 0:
+            raise commands.BadArgument(f"{member.display_name} does not have any tags.")
+
+        pages = self.page_source(doc, title=title, icon_url=icon_url)
+        view = plasma.Pagination(ctx, pages)
+        view.message = await ctx.send(embed=pages[0], view=view)
 
 def setup(bot):
     bot.add_cog(Tags(bot))
