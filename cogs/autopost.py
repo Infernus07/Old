@@ -27,7 +27,7 @@ POSTS = [
         • You need to ping for the shiny hunters once a pokemon spawns.
         • You can catch the pokemon once the timer ran out.
         • Legendary / Mythical / Ultra Beast / Alolan / Galarian / Hisuian pokemons are ffa.
-        • All 2nd & 3rd stage pokemons are ffa excluding the evolutions of baby pokemons. (type `-tag baby` to see the list of baby pokemons)
+        • All 2nd & 3rd stage pokemons are ffa excluding the evolutions of baby pokemons.
         • You also need to ping for event pokemons.
         """
     )
