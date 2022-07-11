@@ -34,8 +34,8 @@ def title(text):
     text = text.replace("Ho-oh", "Ho-Oh")
     return text
 
-def profanity_words(message):
-    words = sub(message.content.lower(), NON_TRIGGER_WORDS)
+def profanity_words(text):
+    words = sub(text.lower(), NON_TRIGGER_WORDS)
     return words
 
 
