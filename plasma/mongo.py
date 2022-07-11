@@ -1,7 +1,5 @@
 from pymongo import MongoClient
 
-from nextcord.ext import commands
-
 from .utils import title
 
 __all__ = ("Mongo", "mongo")
