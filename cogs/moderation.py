@@ -14,12 +14,12 @@ class Action:
     reason: str = None
     duration: datetime = None
 
-    async def notify_user(self):
+    async def notify_user(self, ctx):
         embed = nextcord.Embed(
             color=nextcord.Color.green(),
             description=f"{plasma.Emoji.check()} ***{self.target.display_name} was {self.past_tense}.***"
         )
-        await self.context.send(embed=embed)
+        await ctx.send(embed=embed)
 
     async def notify_target(self):
         embed = nextcord.Embed(
@@ -68,9 +68,9 @@ class Warn(Action):
     emoji = "\N{WARNING SIGN}"
     color = nextcord.Color.orange()
 
-    async def execute(self):
+    async def execute(self, ctx):
         plasma.mongo.update_member(self.target, {"$inc": {"warns": 1}})
-        await self.notify_user()
+        await self.notify_user(ctx)
         await self.notify_target()
         await self.log()
 
@@ -183,7 +183,7 @@ class Moderation(commands.Cog):
             raise commands.BadArgument("That user is a mod/admin, I can't do that.")
 
         action = Warn(ctx, member, reason)
-        await action.execute()
+        await action.execute(ctx)
 
     @plasma.community_server_only()
     @commands.check_any(commands.is_owner(), plasma.is_trial_moderator())
