@@ -2,7 +2,12 @@ import nextcord
 
 from .views import Confirmation
 
-__all__ = ("FakeUser", "sub", "title", "get_confirmation")
+__all__ = ("FakeUser", "sub", "title", "profanity_words", "get_confirmation")
+
+NON_TRIGGER_WORDS = (
+    "hoenn",
+    "fukano"
+)
 
 
 class FakeUser(nextcord.Object):
@@ -28,6 +33,10 @@ def title(text):
     text = " ".join(x.capitalize() for x in text.split())
     text = text.replace("Ho-oh", "Ho-Oh")
     return text
+
+def profanity_words(message):
+    words = sub(message.content.lower(), NON_TRIGGER_WORDS)
+    return words
 
 
 async def get_confirmation(ctx, message):
