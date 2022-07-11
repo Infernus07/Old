@@ -7,7 +7,8 @@ COGS = (
     "misc",
     "moderation",
     "reaction_roles",
-    "spamming"
+    "spamming",
+    "tags"
 )
 
 OWNERS = (
