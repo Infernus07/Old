@@ -32,7 +32,7 @@ COLOR_ROLES = (
 
 BANNED_WORDS = (
     "$uck",
-    "ass",
+    "asshole",
     "b!tch",
     "b1tch",
     "bitch",
