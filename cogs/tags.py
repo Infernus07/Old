@@ -96,7 +96,7 @@ class Tags(commands.Cog):
             "uses": 0
         }
         self.col.insert_one(doc)
-        await self.send(ctx, f"Tag {name} created.")
+        await self.send(ctx, f"Tag `{name}` created.")
 
     @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
     @tag.command()
@@ -112,7 +112,7 @@ class Tags(commands.Cog):
         confirm = await plasma.get_confirmation(ctx, f"Are you sure you want to delete `{name}`?")
         if confirm:
             self.col.delete_one({"alias": name.lower()})
-            await self.send(ctx, f"Tag {name} deleted.")
+            await self.send(ctx, f"Tag `{name}` deleted.")
 
     @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
     @tag.command()
@@ -129,7 +129,7 @@ class Tags(commands.Cog):
             raise commands.BadArgument("You do not own that tag.")
 
         self.col.update_one({"alias": name.lower()}, {"$set": {"content": content}})
-        await self.send(ctx, f"Tag {name} edited.")
+        await self.send(ctx, f"Tag `{name}` edited.")
 
     @commands.check_any(plasma.community_server_only(), plasma.test_server_only())
     @tag.command()
