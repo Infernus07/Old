@@ -212,10 +212,11 @@ class Moderation(commands.Cog):
 
         embed = nextcord.Embed(
             color=nextcord.Color.blue(),
-            title="Warnings",
+            title=f"Warnings: {member.display_name}",
             description=doc["warns"],
             timestamp=datetime.utcnow()
         )
+        embed.set_thumbnail(url=member.display_avatar)
         await ctx.send(embed=embed)
 
     @plasma.community_server_only()
