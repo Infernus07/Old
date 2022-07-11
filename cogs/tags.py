@@ -160,7 +160,7 @@ class Tags(commands.Cog):
     async def search(self, ctx, *, text):
         """Searches for a tag."""
 
-        doc = list(self.col.find({"$text": {"$search": text}}).sort("uses", -1))
+        doc = list(self.col.find({"$text": {"$search": text}}))
         if len(doc) == 0:
             raise commands.BadArgument("No tags found.")
 
